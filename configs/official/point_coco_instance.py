@@ -6,7 +6,9 @@ img_norm_cfg = dict(
 )
 train_pipeline = [
     dict(type="LoadImageFromFile"),
-    dict(type="LoadPointsAnnotations", with_bbox=True, with_mask=False, with_site=True),
+    dict(
+        type="LoadAnnotationsWithSites", with_bbox=True, with_mask=False, with_site=True
+    ),
     dict(
         type="ResizeShortestEdge",
         shortest_edge_scale=[640, 672, 704, 736, 768, 800],

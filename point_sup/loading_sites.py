@@ -3,11 +3,12 @@
 import torch
 import numpy as np
 
+from mmdet.datasets.pipelines import LoadAnnotations
 from mmdet.datasets.builder import PIPELINES
 
 
 @PIPELINES.register_module()
-class LoadAnnotationsWithSites:
+class LoadAnnotationsWithSites(LoadAnnotations):
     """Load multiple types of annotations.
 
     Args:
@@ -38,6 +39,7 @@ class LoadAnnotationsWithSites:
         poly2mask=True,
         file_client_args=dict(backend="disk"),
         Point_N=10,
+        kind="official",  #'own'
     ):
         self.with_bbox = with_bbox
         self.with_label = with_label
@@ -49,6 +51,30 @@ class LoadAnnotationsWithSites:
         self.file_client = None
         self.Point_N = Point_N
         self.Rand_N = Point_N // 2
+        self.kind = kind
+
+    def _load_sites_own(self, results):
+        """Private function to load bounding box annotations.
+
+        Args:
+            results (dict): Result dict from :obj:`mmdet.CustomDataset`.
+
+        Returns:
+            dict: The dict contains loaded bounding box annotations.
+        """
+
+        ann_info = results["ann_info"]
+        results["rand_sites"] = torch.tensor(ann_info["sample_sites"])
+        points_label = []
+        for mask, site in zip(results["gt_masks"], results["rand_sites"]):
+            points_label.append(mask[site[1], site[0]])
+        results["rand_labels"] = torch.tensor(points_label)
+
+        assert results["rand_sites"].shape[-2] == 2
+        results["site_fields"].append("rand_sites")
+        results["label_fields"].append("rand_labels")
+
+        return results
 
     def _load_sites(self, results):
         """Private function to load bounding box annotations.
@@ -105,5 +131,9 @@ class LoadAnnotationsWithSites:
         if self.with_seg:
             results = self._load_semantic_seg(results)
         if self.with_site:
-            results = self._load_sites(results)
+            if self.kind == "official":
+                results = self._load_sites(results)
+            else:
+                results = self._load_sites_own(results)
+
         return results
