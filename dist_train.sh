@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CONFIG_FILE='configs/official/point_sup_r50_fpn_1x_coco.py'
+CONFIG_FILE='configs/own/point_sup_r50_fpn_1x_coco.py'
 GPUS=8
 PORT=${PORT:-29500}
 
