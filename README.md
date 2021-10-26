@@ -17,3 +17,7 @@ please follow official mmdetection instructions
 ## version
 
 - offitial: modified from detectron2 [PointSup](https://github.com/facebookresearch/detectron2/tree/main/projects/PointSup)
+
+- own: implementation from scratch with some features:
+    - sample sites in batch
+    - provide sample sites visual info
