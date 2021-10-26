@@ -4,4 +4,5 @@ _base_ = [
     "./schedule_1x.py",
     "./default_runtime.py",
 ]
+
 relative_imports = dict(imports={".point_sup": "point_sup"}, allow_failed_imports=False)

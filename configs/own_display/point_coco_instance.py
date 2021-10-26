@@ -7,7 +7,11 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type="LoadImageFromFile"),
     dict(
-        type="LoadAnnotationsWithSites", with_bbox=True, with_mask=False, with_site=True
+        type="LoadAnnotationsWithSites",
+        with_bbox=True,
+        with_mask=True,
+        with_site=True,
+        kind="own",
     ),
     dict(
         type="ResizeShortestEdge",
@@ -32,48 +36,23 @@ train_pipeline = [
             "img",
             "gt_bboxes",
             "gt_labels",
+            "gt_masks",
             "rand_labels",
             "rand_sites",
         ],
     ),
 ]
-test_pipeline = [
-    dict(type="LoadImageFromFile"),
-    dict(
-        type="MultiScaleFlipAug",
-        img_scale=(1333, 800),
-        flip=False,
-        transforms=[
-            dict(type="Resize", keep_ratio=True),
-            dict(type="RandomFlip"),
-            dict(type="Normalize", **img_norm_cfg),
-            dict(type="Pad", size_divisor=32),
-            dict(type="ImageToTensor", keys=["img"]),
-            dict(type="Collect", keys=["img"]),
-        ],
-    ),
-]
+
 data = dict(
     samples_per_gpu=2,
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root
-        + "annotations/instances_train2017_n10_v1_without_masks.json",
-        img_prefix=data_root + "train2017/",
+        ann_file=data_root + "annotations/instances_val2017.json",
+        img_prefix=data_root + "val2017/",
         pipeline=train_pipeline,
-    ),
-    val=dict(
-        type=dataset_type,
-        ann_file=data_root + "annotations/instances_val2017.json",
-        img_prefix=data_root + "val2017/",
-        pipeline=test_pipeline,
-    ),
-    test=dict(
-        type=dataset_type,
-        ann_file=data_root + "annotations/instances_val2017.json",
-        img_prefix=data_root + "val2017/",
-        pipeline=test_pipeline,
+        N=10,
+        kind="own",
     ),
 )
 evaluation = dict(metric=["bbox", "segm"])

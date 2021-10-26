@@ -4,10 +4,16 @@ data_root = "data/coco/"
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True
 )
+# [DatasetMapper] Augmentations used in training: [ResizeShortestEdge(short_edge_length=(640, 672, 704, 736, 768, 800), max_size=1333, sample_style='choice'), RandomFlip()]
+# TransformList[ResizeTransform(h=640, w=512, new_h=960, new_w=768, interp=2), HFlipTransform(width=768)]
 train_pipeline = [
     dict(type="LoadImageFromFile"),
     dict(
-        type="LoadAnnotationsWithSites", with_bbox=True, with_mask=False, with_site=True
+        type="LoadAnnotationsWithSites",
+        with_bbox=True,
+        with_mask=True,
+        with_site=True,
+        kind="own",
     ),
     dict(
         type="ResizeShortestEdge",
@@ -58,16 +64,19 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root
-        + "annotations/instances_train2017_n10_v1_without_masks.json",
+        ann_file=data_root + "annotations/instances_train2017.json",
         img_prefix=data_root + "train2017/",
         pipeline=train_pipeline,
+        N=10,
+        kind="own",
     ),
     val=dict(
         type=dataset_type,
         ann_file=data_root + "annotations/instances_val2017.json",
         img_prefix=data_root + "val2017/",
         pipeline=test_pipeline,
+        N=10,
+        kind="own",
     ),
     test=dict(
         type=dataset_type,
