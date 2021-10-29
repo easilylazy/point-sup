@@ -8,6 +8,12 @@ implement with mmdetection
 
 mmdet
 
+## performance
+
+
+| Backbone  | Style    | Lr schd | mask AP | 
+|:---------:|:-------:|:-------:|:--------:|
+| R-50      | pytorch   | 3x       |   36.1         |  
 ## usage
 
 ### train
